@@ -22,7 +22,7 @@ flightModeFlags = 0x00000002
 previousFlightMode = flightModeFlags
 
 # Initialize MSP data structures
-battery_state = MspBatteryState(0, 0, 0, 0, 0, 0, 0, 0)
+battery_state = MspBatteryState(0, 0, 0, 0, 0, 0, 0)
 name = MspName(craft_name="Rert")
 fc_version = MSPFCVersion(versionMajor=4, versionMinor=1, versionPatchLevel=1)
 fc_variant = MSPFCVariant(flightControlIdentifier="BTFL")
