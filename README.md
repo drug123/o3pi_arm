@@ -10,7 +10,7 @@ Select Yes for "Would you like the serial port hardware to be enabled?"
 Reboot the Raspberry Pi.
 Identify Serial Port:
 
-The primary UART on the Raspberry Pi 4 is usually /dev/ttyAMA0. You can verify this by running ls /dev/tty*.
+The primary UART on the Raspberry Pi 4 is usually `/dev/ttyAMA0`. You can verify this by running `ls /dev/tty*`.
 
 ## Service Setup (using systemd)
 ### Create a Service File:
