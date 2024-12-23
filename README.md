@@ -1,7 +1,7 @@
 # o3pi_arm
 Raspberry Pi 4 Configuration Steps
 
-##Enable UART:
+## Enable UART:
 
 Run `sudo raspi-config`
 Go to Interface Options -> Serial Port
