@@ -34,7 +34,9 @@ status_DJI = MspStatusDJI(
     averageSystemLoadPercent=7,
     accCalibrationAxisFlags=0,
     DJI_ARMING_DISABLE_FLAGS_COUNT=20,
-    djiPackArmingDisabledFlags=(1 << 24)
+    djiPackArmingDisabledFlags=(1 << 24),
+    flightModeFlags=flightModeFlags,
+    armingFlags=0x0000
 )
 
 def main():
