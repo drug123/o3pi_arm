@@ -3,15 +3,10 @@ Raspberry Pi 4 Configuration Steps
 
 ## Enable UART:
 Run `sudo raspi-config`
-
 Go to Interface Options -> Serial Port
-
 Select No for "Would you like a login shell to be accessible over serial?"
-
 Select Yes for "Would you like the serial port hardware to be enabled?"
-
 Reboot the Raspberry Pi.
-
 Identify Serial Port: The primary UART on the Raspberry Pi 4 is usually `/dev/ttyAMA0`. You can verify this by running `ls /dev/tty*`.
 
 ## Service Setup (using systemd)
