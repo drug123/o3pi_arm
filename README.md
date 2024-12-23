@@ -19,8 +19,7 @@ Service Setup (using systemd)
 Create a Service File:
 
 Create a file named msp_service.service in /etc/systemd/system/:
-Ini, TOML
-
+```
 [Unit]
 Description=MSP Service
 After=network.target
@@ -35,6 +34,7 @@ User=pi
 
 [Install]
 WantedBy=multi-user.target
+```
 Explanation:
 Description: A brief description of your service.
 After: Specifies that the service should start after the network is up.
