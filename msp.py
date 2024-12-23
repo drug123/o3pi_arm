@@ -106,6 +106,9 @@ class MSP:
         self.ser.reset_output_buffer()
 
     def send(self, message_id, payload=b''):
+        if hasattr(payload, 'serialize') and callable(payload.serialize):
+            # Serialize the payload to bytes
+            payload = payload.serialize()
         size = len(payload)
         header = b'$M<'
         checksum = size ^ message_id
