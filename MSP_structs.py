@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List
 
 @dataclass
 class MSPApiVersion:
@@ -16,7 +17,7 @@ class MSPStatus:
 
 @dataclass
 class MSPFCVariant:
-    flight_control_identifier: str
+    flight_control_identifier: str = field(metadata={"length": 4})
 
 @dataclass
 class MSPFCVersion:
@@ -26,20 +27,20 @@ class MSPFCVersion:
 
 @dataclass
 class MSPBoardInfo:
-    board_identifier: str
+    board_identifier: str = field(metadata={"length": 4})
     hardware_revision: int
 
 @dataclass
 class MSPBuildInfo:
-    build_date: str
-    build_time: str
-    short_git_revision: str
+    build_date: str = field(metadata={"length": 11})
+    build_time: str = field(metadata={"length": 8})
+    short_git_revision: str = field(metadata={"length": 7})
 
 @dataclass
 class MSPRawIMU:
-    acc: list
-    gyro: list
-    mag: list
+    acc: List[int] = field(default_factory=lambda: [0, 0, 0])
+    gyro: List[int] = field(default_factory=lambda: [0, 0, 0])
+    mag: List[int] = field(default_factory=lambda: [0, 0, 0])
 
 @dataclass
 class MSPSensorStatus:
@@ -55,19 +56,19 @@ class MSPSensorStatus:
 
 @dataclass
 class MSPServo:
-    servo: list
+    servo: List[int] = field(default_factory=lambda: [0] * 8)
 
 @dataclass
 class MSPServoConfigurations:
-    conf: list
+    conf: List[dict] = field(default_factory=lambda: [{}] * 8)
 
 @dataclass
 class MSPMotor:
-    motor: list
+    motor: List[int] = field(default_factory=lambda: [0] * 8)
 
 @dataclass
 class MSPRC:
-    channel_value: list
+    channel_value: List[int] = field(default_factory=lambda: [0] * 16)
 
 @dataclass
 class MSPAttitude:
@@ -105,7 +106,7 @@ class MSPLoopTime:
 class MSPRCTuning:
     rc_rate8: int
     rc_expo8: int
-    rates: list
+    rates: List[int] = field(default_factory=lambda: [0, 0, 0])
     dyn_thr_pid: int
     thr_mid8: int
     thr_expo8: int
@@ -114,16 +115,16 @@ class MSPRCTuning:
 
 @dataclass
 class MSPPID:
-    roll: list
-    pitch: list
-    yaw: list
-    pos_z: list
-    pos_xy: list
-    vel_xy: list
-    surface: list
-    level: list
-    heading: list
-    vel_z: list
+    roll: List[int] = field(default_factory=lambda: [0, 0, 0])
+    pitch: List[int] = field(default_factory=lambda: [0, 0, 0])
+    yaw: List[int] = field(default_factory=lambda: [0, 0, 0])
+    pos_z: List[int] = field(default_factory=lambda: [0, 0, 0])
+    pos_xy: List[int] = field(default_factory=lambda: [0, 0, 0])
+    vel_xy: List[int] = field(default_factory=lambda: [0, 0, 0])
+    surface: List[int] = field(default_factory=lambda: [0, 0, 0])
+    level: List[int] = field(default_factory=lambda: [0, 0, 0])
+    heading: List[int] = field(default_factory=lambda: [0, 0, 0])
+    vel_z: List[int] = field(default_factory=lambda: [0, 0, 0])
 
 @dataclass
 class MSPMisc:
@@ -229,7 +230,7 @@ class MSPRXConfig:
 
 @dataclass
 class MSPRXMap:
-    rxmap: list
+    rxmap: List[int] = field(default_factory=lambda: [0] * 8)
 
 @dataclass
 class MSPSensorAlignment:
@@ -255,20 +256,20 @@ class MSPSetHead:
 
 @dataclass
 class MSPSetRawRC:
-    channel: list
+    channel: List[int] = field(default_factory=lambda: [0] * 16)
 
 @dataclass
 class MSPSetPID:
-    roll: list
-    pitch: list
-    yaw: list
-    pos_z: list
-    pos_xy: list
-    vel_xy: list
-    surface: list
-    level: list
-    heading: list
-    vel_z: list
+    roll: List[int] = field(default_factory=lambda: [0, 0, 0])
+    pitch: List[int] = field(default_factory=lambda: [0, 0, 0])
+    yaw: List[int] = field(default_factory=lambda: [0, 0, 0])
+    pos_z: List[int] = field(default_factory=lambda: [0, 0, 0])
+    pos_xy: List[int] = field(default_factory=lambda: [0, 0, 0])
+    vel_xy: List[int] = field(default_factory=lambda: [0, 0, 0])
+    surface: List[int] = field(default_factory=lambda: [0, 0, 0])
+    level: List[int] = field(default_factory=lambda: [0, 0, 0])
+    heading: List[int] = field(default_factory=lambda: [0, 0, 0])
+    vel_z: List[int] = field(default_factory=lambda: [0, 0, 0])
 
 @dataclass
 class MSPSetRawGPS:

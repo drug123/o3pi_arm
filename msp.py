@@ -181,12 +181,34 @@ class MSP:
 
     # Define BOXIDS as per C++ implementation
     BOXIDS = [
-        0,  # 0: MSP_MODE_ARM
-        1,  # 1: MSP_MODE_ANGLE
-        2,  # 2: MSP_MODE_HORIZON
-        3,  # 3: MSP_MODE_NAVALTHOLD
-        5,  # 4: MSP_MODE_MAG
-        6,  # 5: MSP_MODE_HEADFREE
-        7,  # 6: MSP_MODE_HEADADJ
-        # ...other mode mappings...
+        0,  #  0: MSP_MODE_ARM
+        1,  #  1: MSP_MODE_ANGLE
+        2,  #  2: MSP_MODE_HORIZON
+        3,  #  3: MSP_MODE_NAVALTHOLD (cleanflight BARO)
+        5,  #  4: MSP_MODE_MAG
+        6,  #  5: MSP_MODE_HEADFREE
+        7,  #  6: MSP_MODE_HEADADJ
+        8,  #  7: MSP_MODE_CAMSTAB
+        10, #  8: MSP_MODE_NAVRTH (cleanflight GPSHOME)
+        11, #  9: MSP_MODE_NAVPOSHOLD (cleanflight GPSHOLD)
+        12, # 10: MSP_MODE_PASSTHRU
+        13, # 11: MSP_MODE_BEEPERON
+        15, # 12: MSP_MODE_LEDLOW
+        16, # 13: MSP_MODE_LLIGHTS
+        19, # 14: MSP_MODE_OSD
+        20, # 15: MSP_MODE_TELEMETRY
+        21, # 16: MSP_MODE_GTUNE
+        22, # 17: MSP_MODE_SONAR
+        26, # 18: MSP_MODE_BLACKBOX
+        27, # 19: MSP_MODE_FAILSAFE
+        28, # 20: MSP_MODE_NAVWP (cleanflight AIRMODE)
+        29, # 21: MSP_MODE_AIRMODE (cleanflight DISABLE3DSWITCH)
+        30, # 22: MSP_MODE_HOMERESET (cleanflight FPVANGLEMIX)
+        31, # 23: MSP_MODE_GCSNAV (cleanflight BLACKBOXERASE)
+        32, # 24: MSP_MODE_HEADINGLOCK
+        33, # 25: MSP_MODE_SURFACE
+        34, # 26: MSP_MODE_FLAPERON
+        35, # 27: MSP_MODE_TURNASSIST
+        36, # 28: MSP_MODE_NAVLAUNCH
+        37, # 29: MSP_MODE_AUTOTRIM
     ]
