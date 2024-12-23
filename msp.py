@@ -1,206 +1,131 @@
 import serial
-import time
-import logging
 import struct
+import time
 
-# Configure logging
-logging.basicConfig(filename='msp_service.log', level=logging.DEBUG,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+# Constants for MSP message IDs
+MSP_API_VERSION = 1
+MSP_FC_VARIANT = 2
+MSP_FC_VERSION = 3
+MSP_BOARD_INFO = 4
+MSP_BUILD_INFO = 5
+# ...existing constants...
+MSP_STATUS = 101
+MSP_RAW_IMU = 102
+# ...existing constants...
 
+# MSP mode bits
+MSP_MODE_ARM = 0
+MSP_MODE_ANGLE = 1
+# ...existing mode bits...
+
+# Data structures for MSP messages
+class MSPApiVersion:
+    def __init__(self, protocol_version=0, api_major=0, api_minor=0):
+        self.protocol_version = protocol_version
+        self.api_major = api_major
+        self.api_minor = api_minor
+
+class MSPStatus:
+    def __init__(self, cycle_time=0, i2c_error_counter=0, sensor=0, flight_mode_flags=0, config_profile_index=0):
+        self.cycle_time = cycle_time
+        self.i2c_error_counter = i2c_error_counter
+        self.sensor = sensor
+        self.flight_mode_flags = flight_mode_flags
+        self.config_profile_index = config_profile_index
+
+# ...other data structures...
 
 class MSP:
-    MSP_HEADER = "$M<"
-    MSP_IDENT = 100
-    MSP_STATUS = 101
-    MSP_RAW_IMU = 102
-    MSP_SERVO = 103
-    MSP_MOTOR = 104
-    MSP_RC = 105
-    MSP_RAW_GPS = 106
-    MSP_COMP_GPS = 107
-    MSP_ATTITUDE = 108
-    MSP_ALTITUDE = 109
-    MSP_ANALOG = 110
-    MSP_RC_TUNING = 111
-    MSP_PID = 112
-    MSP_BOX = 113
-    MSP_MISC = 114
-    MSP_MOTOR_PINS = 115
-    MSP_BOXNAMES = 116
-    MSP_PIDNAMES = 117
-    MSP_WP = 118
-    MSP_BOXIDS = 119
-    MSP_SERVO_CONF = 120
-    MSP_NAV_STATUS = 121
-    MSP_NAV_CONFIG = 122
-    MSP_MOTOR_MIXER = 128
-    MSP_RESET_CONF = 131
-    MSP_SET_RAW_RC = 200
-    MSP_SET_RAW_GPS = 201
-    MSP_SET_PID = 202
-    MSP_SET_BOX = 203
-    MSP_SET_RC_TUNING = 204
-    MSP_ACC_CALIBRATION = 205
-    MSP_MAG_CALIBRATION = 206
-    MSP_SET_MISC = 207
-    MSP_RESET_CONF = 208
-    MSP_SET_WP = 209
-    MSP_SWITCH_RC_SERIAL = 210
-    MSP_IS_SERIAL = 211
-    MSP_DEBUG = 254
+    def __init__(self, ser, timeout=0.5):
+        self.ser = ser
+        self.timeout = timeout
 
-    def __init__(self, ser_port="/dev/ttyAMA0"):
-        self.ser = serial.Serial()
-        self.ser.port = ser_port
-        self.logger = logging.getLogger("MSP")
-        self.is_initialized = False
+    def reset(self):
+        self.ser.reset_input_buffer()
+        self.ser.reset_output_buffer()
 
-    def initialize_serial(self, baudrate=115200):
-        """Initializes the serial port."""
-        if not self.is_initialized:
-            try:
-                self.ser.baudrate = baudrate
-                self.ser.bytesize = serial.EIGHTBITS
-                self.ser.parity = serial.PARITY_NONE
-                self.ser.stopbits = serial.STOPBITS_ONE
-                self.ser.timeout = 0.05  # 50ms timeout
-                self.ser.xonxoff = False
-                self.ser.rtscts = False
-                self.ser.dsrdtr = False
-                self.ser.open()
-                self.is_initialized = True
-                self.logger.info(f"Serial port {self.ser.port} initialized at {baudrate}")
-            except Exception as e:
-                self.logger.error(f"Error opening serial port {self.ser.port}: {e}")
-                raise
+    def send(self, message_id, payload=b''):
+        size = len(payload)
+        header = b'$M<'
+        checksum = size ^ message_id
+        for byte in payload:
+            checksum ^= byte
+        frame = header + bytes([size]) + bytes([message_id]) + payload + bytes([checksum])
+        self.ser.write(frame)
 
-    def close_serial(self):
-        """Closes the serial port."""
-        if self.is_initialized:
-            try:
-                self.ser.close()
-                self.is_initialized = False
-                self.logger.info(f"Serial port {self.ser.port} closed")
-            except Exception as e:
-                self.logger.error(f"Error closing serial port {self.ser.port}: {e}")
-
-    def send_command(self, msp_code, data=[]):
-        """Sends an MSP command with optional data payload."""
-        self.initialize_serial()
-
-        data_length = len(data)
-        checksum = 0
-        buffer = bytearray()
-        buffer.extend(map(ord, self.MSP_HEADER))
-        buffer.append(data_length)
-        buffer.append(msp_code)
-        checksum ^= data_length ^ msp_code
-
-        for d in data:
-            buffer.append(d)
-            checksum ^= d
-        buffer.append(checksum)
-
-        try:
-            self.ser.write(buffer)
-            self.logger.debug(f"Sent MSP command: {msp_code}, Data: {[x for x in data]}")
-        except Exception as e:
-            self.logger.error(f"Error sending MSP command {msp_code}: {e}")
-
-    def receive_data(self, msp_code, num_of_data_expected=0):
-        """Receives data from the MSP device."""
+    def recv(self, message_id=None, max_size=256):
         start_time = time.time()
-        timeout = 1  # seconds
-        
-        
-        while (time.time() - start_time) < timeout:
-          if self.ser.in_waiting > 0:
-            header = self.ser.read(3).decode('utf-8', errors='replace')
-            if header == self.MSP_HEADER:
-                data_length = self.ser.read(1)[0]
-                received_msp_code = self.ser.read(1)[0]
-                checksum = data_length ^ received_msp_code
+        while True:
+            if self.ser.in_waiting >= 3:
+                header = self.ser.read(3)
+                if header == b'$M>' or header == b'$M<':
+                    size = self.ser.read(1)[0]
+                    recv_id = self.ser.read(1)[0]
+                    payload = self.ser.read(size)
+                    checksum = self.ser.read(1)[0]
+                    checksum_calc = size ^ recv_id
+                    for byte in payload:
+                        checksum_calc ^= byte
+                    if checksum == checksum_calc:
+                        if message_id is None or recv_id == message_id:
+                            return recv_id, payload
+                else:
+                    continue
+            if time.time() - start_time >= self.timeout:
+                return None, None
 
-                if received_msp_code == msp_code:
-                    data = bytearray()
-                    for _ in range(data_length):
-                        byte = self.ser.read(1)[0]
-                        data.append(byte)
-                        checksum ^= byte
+    def activity_detected(self):
+        start_time = time.time()
+        while True:
+            if self.ser.in_waiting > 0:
+                return True
+            if time.time() - start_time >= self.timeout:
+                return False
 
-                    received_checksum = self.ser.read(1)[0]
-                    if received_checksum == checksum:
-                        self.logger.debug(f"Received MSP data for code {msp_code}: {data.hex()}")
-                        return data
-                    else:
-                        self.logger.error(f"Checksum mismatch for MSP code {msp_code}")
-                        return None
-            else:
-                self.logger.warning(f"Received unexpected header: {header}")
-        self.logger.warning(f"Timeout waiting for MSP data for code {msp_code}")
+    def wait_for(self, message_id):
+        start_time = time.time()
+        while time.time() - start_time < self.timeout:
+            recv_id, payload = self.recv(message_id)
+            if recv_id == message_id:
+                return payload
         return None
 
-    def decode_data(self, msp_code, data):
-        """Decodes received MSP data based on msp_code."""
-        try:
-            if msp_code == self.MSP_RC:
-                # Assuming 8 channels, 2 bytes each
-                channels = struct.unpack('<8H', data)  
-                self.logger.info(f"Decoded RC data: Channels: {channels}")
-                return channels
-            elif msp_code == self.MSP_STATUS:
-                # Decoding logic for MSP_STATUS
-                # Assuming it returns a tuple of (cycleTime, i2cError, sensors, mode)
-                cycleTime, i2cError, sensors, mode = struct.unpack('<HHHI', data)
-                self.logger.info(f"Decoded Status data: CycleTime={cycleTime}, i2cError={i2cError}, Sensors={sensors}, Mode={mode}")
-                return cycleTime, i2cError, sensors, mode
-            elif msp_code == self.MSP_IDENT:
-                # Decoding logic for MSP_IDENT
-                # Assuming it returns a tuple of (version, multitype, msp_version, capability)
-                version, multitype, msp_version, capability = struct.unpack('<BBBI', data)
-                self.logger.info(f"Decoded Ident data: Version={version}, Multitype={multitype}, MSPVersion={msp_version}, Capability={capability}")
-                return version, multitype, msp_version, capability
-            elif msp_code == self.MSP_MOTOR:
-                # Decoding logic for MSP_MOTOR
-                # Assuming it returns a tuple of motor values (e.g., 8 motors, 2 bytes each)
-                motors = struct.unpack('<8H', data)
-                self.logger.info(f"Decoded Motor data: Motors={motors}")
-                return motors
-            elif msp_code == self.MSP_ALTITUDE:
-                # Decoding logic for MSP_ALTITUDE
-                # Assuming it returns a tuple of (altitude, vario) in centimeters and decimeters/second
-                altitude, vario = struct.unpack('<iH', data)
-                self.logger.info(f"Decoded Altitude data: Altitude={altitude} cm, Vario={vario} dm/s")
-                return altitude, vario
-            else:
-                self.logger.warning(f"Decoding not implemented for MSP code: {msp_code}")
-                return data  # Return raw data if not decoded
-        except struct.error as e:
-            self.logger.error(f"Error decoding data for MSP code {msp_code}: {e}")
-            return None
+    def request(self, message_id):
+        self.send(message_id)
+        return self.wait_for(message_id)
 
-# Example usage (in a separate file, e.g., main.py):
-if __name__ == "__main__":
-    msp = MSP()
-    msp.initialize_serial()
-    
-    # Example of sending a command and receiving/decoding data
-    msp.send_command(msp.MSP_RC)
-    rc_data = msp.receive_data(msp.MSP_RC, 16)  # Assuming 16 bytes for RC data
-    if rc_data:
-        decoded_rc_data = msp.decode_data(msp.MSP_RC, rc_data)
-        print("Decoded RC data:", decoded_rc_data)
-    
-    msp.send_command(msp.MSP_MOTOR)
-    motor_data = msp.receive_data(msp.MSP_MOTOR, 16)  # Assuming 16 bytes for RC data
-    if motor_data:
-        decoded_motor_data = msp.decode_data(msp.MSP_MOTOR, motor_data)
-        print("Decoded RC data:", decoded_motor_data)
-        
-    msp.send_command(msp.MSP_ALTITUDE)
-    altitude_data = msp.receive_data(msp.MSP_ALTITUDE, 6)  # Assuming 16 bytes for RC data
-    if altitude_data:
-        decoded_altitude_data = msp.decode_data(msp.MSP_ALTITUDE, altitude_data)
-        print("Decoded RC data:", decoded_altitude_data)
+    def command(self, message_id, payload=b'', wait_ack=True):
+        self.send(message_id, payload)
+        if wait_ack:
+            ack = self.wait_for(message_id)
+            return ack is not None
+        return True
 
-    msp.close_serial()
+    def get_active_modes(self):
+        status_payload = self.request(MSP_STATUS)
+        if status_payload:
+            status_data = struct.unpack('<HHHIB', status_payload)
+            status = MSPStatus(*status_data)
+            boxids_payload = self.request(MSP_BOXIDS)
+            if boxids_payload:
+                boxids = list(boxids_payload)
+                active_modes = 0
+                for i, boxid in enumerate(boxids):
+                    if status.flight_mode_flags & (1 << i):
+                        if boxid in self.BOXIDS:
+                            mode_bit = self.BOXIDS.index(boxid)
+                            active_modes |= 1 << mode_bit
+                return active_modes
+        return None
+
+    # Define BOXIDS as per C++ implementation
+    BOXIDS = [
+        0,  # 0: MSP_MODE_ARM
+        1,  # 1: MSP_MODE_ANGLE
+        2,  # 2: MSP_MODE_HORIZON
+        3,  # 3: MSP_MODE_NAVALTHOLD
+        5,  # 4: MSP_MODE_MAG
+        6,  # 5: MSP_MODE_HEADFREE
+        7,  # 6: MSP_MODE_HEADADJ
+        # ...other mode mappings...
+    ]
