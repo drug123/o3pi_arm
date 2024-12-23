@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, MISSING
 from typing import List
 
 @dataclass
@@ -28,7 +28,7 @@ class MSPFCVersion:
 @dataclass
 class MSPBoardInfo:
     board_identifier: str = field(metadata={"length": 4})
-    hardware_revision: int
+    hardware_revision: int = field(default_factory=MISSING)
 
 @dataclass
 class MSPBuildInfo:
@@ -107,11 +107,11 @@ class MSPRCTuning:
     rc_rate8: int
     rc_expo8: int
     rates: List[int] = field(default_factory=lambda: [0, 0, 0])
-    dyn_thr_pid: int
-    thr_mid8: int
-    thr_expo8: int
-    tpa_breakpoint: int
-    rc_yaw_expo8: int
+    dyn_thr_pid: int = field(default_factory=MISSING)
+    thr_mid8: int = field(default_factory=MISSING)
+    thr_expo8: int = field(default_factory=MISSING)
+    tpa_breakpoint: int = field(default_factory=MISSING)
+    rc_yaw_expo8: int = field(default_factory=MISSING)
 
 @dataclass
 class MSPPID:
