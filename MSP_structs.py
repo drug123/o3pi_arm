@@ -25,6 +25,7 @@ class MSPFCVersion:
     version_minor: int
     version_patch_level: int
 
+
 @dataclass
 class MSPBoardInfo:
     board_identifier: str = field(metadata={"length": 4})
