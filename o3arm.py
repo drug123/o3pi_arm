@@ -4,7 +4,7 @@ from MSP import MSP
 from MSP_OSD import *
 from OSD_positions_config import *
 from MSP_constants import *
-from MSP_structs import msp_battery_state_t, msp_name_t, msp_fc_version_t, msp_fc_variant_t, msp_status_DJI_t
+from MSP_structs import *
 
 # Configure the serial port
 MSP_PORT = '/dev/serial0'  # Replace with the correct serial port
@@ -22,11 +22,11 @@ flightModeFlags = 0x00000002
 previousFlightMode = flightModeFlags
 
 # Initialize MSP data structures
-battery_state = msp_battery_state_t()
-name = msp_name_t(craft_name="Rert")
-fc_version = msp_fc_version_t(versionMajor=4, versionMinor=1, versionPatchLevel=1)
-fc_variant = msp_fc_variant_t(flightControlIdentifier="BTFL")
-status_DJI = msp_status_DJI_t(
+battery_state = MspBatteryState()
+name = MspName(craft_name="Rert")
+fc_version = MSPFCVersion(versionMajor=4, versionMinor=1, versionPatchLevel=1)
+fc_variant = MSPFCVariant(flightControlIdentifier="BTFL")
+status_DJI = MspStatusDJI(
     cycleTime=0x0080,
     i2cErrorCounter=0,
     sensor=0x23,
