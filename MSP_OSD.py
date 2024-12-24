@@ -108,7 +108,7 @@ class MspOsdConfig:
     overlay_radio_mode: int = 0           # 0
 
     def serialize(self):
-        return struct.pack('<' + 'I' * 99,
+        return struct.pack('<' + 'H' * 99,
                            self.osdflags,
                            self.video_system,
                            self.units,
