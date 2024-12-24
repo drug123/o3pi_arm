@@ -94,8 +94,6 @@ class MSPStatus:
         self.flight_mode_flags = flight_mode_flags
         self.config_profile_index = config_profile_index
 
-# ...other data structures...
-
 class MSP:
     def __init__(self, ser, timeout=0.5):
         self.ser = ser
