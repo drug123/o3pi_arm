@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from typing import List
+import struct
 
 @dataclass
 class MSPApiVersion:
@@ -19,6 +20,13 @@ class MSPStatus:
 class MSPFCVariant:
     flight_control_identifier: str = field(metadata={"length": 4})
 
+    def serialize(self):
+        # Encode the string to bytes and ensure it is exactly 4 bytes
+        identifier_bytes = self.flight_control_identifier.encode('ascii')
+        if len(identifier_bytes) != 4:
+            raise ValueError("flight_control_identifier must be exactly 4 ASCII characters.")
+        return identifier_bytes
+
 @dataclass
 class MSPFCVersion:
     version_major: int
@@ -31,11 +39,11 @@ class MSPBoardInfo:
     board_identifier: str = field(metadata={"length": 4})
 
     def serialize(self):
-        # Serialize fields in original order
-        return (
-            self.board_identifier,
-            self.hardware_revision
-        )
+        # Encode the string and pack the integer
+        identifier_bytes = self.board_identifier.encode('ascii')
+        if len(identifier_bytes) != 4:
+            raise ValueError("board_identifier must be exactly 4 ASCII characters.")
+        return identifier_bytes + struct.pack('<I', self.hardware_revision)
 
 @dataclass
 class MSPBuildInfo:
@@ -100,6 +108,9 @@ class MSPAnalog:
     rssi: int
     amperage: int
 
+    def serialize(self):
+        return struct.pack('<IIII', self.vbat, self.mah_drawn, self.rssi, self.amperage)
+
 @dataclass
 class MSPArmingConfig:
     auto_disarm_delay: int
@@ -121,17 +132,18 @@ class MSPRCTuning:
     rates: List[int] = field(default_factory=lambda: [0, 0, 0])
 
     def serialize(self):
-        # Serialize fields in original order
-        return (
-            self.rc_rate8,
-            self.rc_expo8,
-            self.rates,
-            self.dyn_thr_pid,
-            self.thr_mid8,
-            self.thr_expo8,
-            self.tpa_breakpoint,
-            self.rc_yaw_expo8
-        )
+        # Pack the first seven integer fields
+        header = struct.pack('<BBIIBBB',
+                             self.rc_rate8,
+                             self.rc_expo8,
+                             self.dyn_thr_pid,
+                             self.thr_mid8,
+                             self.thr_expo8,
+                             self.tpa_breakpoint,
+                             self.rc_yaw_expo8)
+        # Pack the rates list
+        rates_packed = struct.pack('<III', *self.rates)
+        return header + rates_packed
 
 @dataclass
 class MSPPID:
