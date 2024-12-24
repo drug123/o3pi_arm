@@ -23,7 +23,7 @@ previousFlightMode = flightModeFlags
 
 # Initialize MSP data structures
 battery_state = MspBatteryState(0, 0, 0, 0, 0, 0, 0)
-name = MspName(craft_name="Rert")
+name = MspName(name="Retr")
 fc_version = MSPFCVersion(version_major=4, version_minor=1, version_patch_level=1)
 fc_variant = MSPFCVariant(flight_control_identifier="BTFL")
 status_DJI = MspStatusDJI(
