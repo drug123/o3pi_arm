@@ -365,3 +365,13 @@ class MSPSetWP:
     p2: int
     p3: int
     flag: int
+
+@dataclass
+class MspName:
+    name: str = field(metadata={"length": 20})  # Adjust the length as per your protocol specifications
+
+    def serialize(self):
+        name_bytes = self.name.encode('ascii')
+        if len(name_bytes) != 20:
+            raise ValueError("name must be exactly 20 ASCII characters.")
+        return name_bytes
