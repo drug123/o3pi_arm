@@ -8,6 +8,9 @@ class MSPApiVersion:
     api_major: int
     api_minor: int
 
+    def serialize(self):
+        return struct.pack('<HHH', self.protocol_version, self.api_major, self.api_minor)
+
 @dataclass
 class MSPStatus:
     cycle_time: int
@@ -15,6 +18,14 @@ class MSPStatus:
     sensor: int
     flight_mode_flags: int
     config_profile_index: int
+
+    def serialize(self):
+        return struct.pack('<HHHBB', 
+                           self.cycle_time, 
+                           self.i2c_error_counter, 
+                           self.sensor, 
+                           self.flight_mode_flags, 
+                           self.config_profile_index)
 
 @dataclass
 class MSPFCVariant:
@@ -32,6 +43,9 @@ class MSPFCVersion:
     version_major: int
     version_minor: int
     version_patch_level: int
+
+    def serialize(self):
+        return struct.pack('<HHH', self.version_major, self.version_minor, self.version_patch_level)
 
 @dataclass
 class MSPBoardInfo:
@@ -51,11 +65,19 @@ class MSPBuildInfo:
     build_time: str = field(metadata={"length": 8})
     short_git_revision: str = field(metadata={"length": 7})
 
+    def serialize(self):
+        return (self.build_date.encode('ascii') +
+                self.build_time.encode('ascii') +
+                self.short_git_revision.encode('ascii'))
+
 @dataclass
 class MSPRawIMU:
     acc: List[int] = field(default_factory=lambda: [0, 0, 0])
     gyro: List[int] = field(default_factory=lambda: [0, 0, 0])
     mag: List[int] = field(default_factory=lambda: [0, 0, 0])
+
+    def serialize(self):
+        return struct.pack('<iii', *self.acc) + struct.pack('<iii', *self.gyro) + struct.pack('<iii', *self.mag)
 
 @dataclass
 class MSPSensorStatus:
@@ -69,13 +91,33 @@ class MSPSensorStatus:
     hw_pitotmeter_status: int
     hw_optical_flow_status: int
 
+    def serialize(self):
+        return struct.pack('<IIIIIIIII',
+                           self.is_hardware_healthy,
+                           self.hw_gyro_status,
+                           self.hw_accelerometer_status,
+                           self.hw_compass_status,
+                           self.hw_barometer_status,
+                           self.hw_gps_status,
+                           self.hw_rangefinder_status,
+                           self.hw_pitotmeter_status,
+                           self.hw_optical_flow_status)
+
 @dataclass
 class MSPServo:
     servo: List[int] = field(default_factory=lambda: [0] * 8)
 
+    def serialize(self):
+        return struct.pack('<' + 'H' * 8, *self.servo)
+
 @dataclass
 class MSPServoConfigurations:
     conf: List[dict] = field(default_factory=lambda: [{}] * 8)
+
+    def serialize(self):
+        # Example serialization, adjust based on actual structure
+        serialized_conf = b''.join([struct.pack('<I', 0) for _ in self.conf])  # Placeholder
+        return serialized_conf
 
 @dataclass
 class MSPMotor:
