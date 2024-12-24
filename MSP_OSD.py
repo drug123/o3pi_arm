@@ -7,105 +7,105 @@ MSP_BATTERY_STATE = 130    # Out message: Connected/Disconnected, Voltage, Curre
 
 @dataclass
 class MspOsdConfig:
-    osdflags: int
-    video_system: int
-    units: int
-    rssi_alarm: int
-    cap_alarm: int
-    old_timer_alarm: int
-    osd_item_count: int               # 56
-    alt_alarm: int
-    osd_rssi_value_pos: int
-    osd_main_batt_voltage_pos: int
-    osd_crosshairs_pos: int
-    osd_artificial_horizon_pos: int
-    osd_horizon_sidebars_pos: int
-    osd_item_timer_1_pos: int
-    osd_item_timer_2_pos: int
-    osd_flymode_pos: int
-    osd_craft_name_pos: int
-    osd_throttle_pos_pos: int
-    osd_vtx_channel_pos: int
-    osd_current_draw_pos: int
-    osd_mah_drawn_pos: int
-    osd_gps_speed_pos: int
-    osd_gps_sats_pos: int
-    osd_altitude_pos: int
-    osd_roll_pids_pos: int
-    osd_pitch_pids_pos: int
-    osd_yaw_pids_pos: int
-    osd_power_pos: int
-    osd_pidrate_profile_pos: int
-    osd_warnings_pos: int
-    osd_avg_cell_voltage_pos: int
-    osd_gps_lon_pos: int
-    osd_gps_lat_pos: int
-    osd_debug_pos: int
-    osd_pitch_angle_pos: int
-    osd_roll_angle_pos: int
-    osd_main_batt_usage_pos: int
-    osd_disarmed_pos: int
-    osd_home_dir_pos: int
-    osd_home_dist_pos: int
-    osd_numerical_heading_pos: int
-    osd_numerical_vario_pos: int
-    osd_compass_bar_pos: int
-    osd_esc_tmp_pos: int
-    osd_esc_rpm_pos: int
-    osd_remaining_time_estimate_pos: int
-    osd_rtc_datetime_pos: int
-    osd_adjustment_range_pos: int
-    osd_core_temperature_pos: int
-    osd_anti_gravity_pos: int
-    osd_g_force_pos: int
-    osd_motor_diag_pos: int
-    osd_log_status_pos: int
-    osd_flip_arrow_pos: int
-    osd_link_quality_pos: int
-    osd_flight_dist_pos: int
-    osd_stick_overlay_left_pos: int
-    osd_stick_overlay_right_pos: int
-    osd_display_name_pos: int
-    osd_esc_rpm_freq_pos: int
-    osd_rate_profile_name_pos: int
-    osd_pid_profile_name_pos: int
-    osd_profile_name_pos: int
-    osd_rssi_dbm_value_pos: int
-    osd_rc_channels_pos: int
-    osd_stat_count: int               # 24
-    osd_stat_rtc_date_time: int
-    osd_stat_timer_1: int
-    osd_stat_timer_2: int
-    osd_stat_max_speed: int
-    osd_stat_max_distance: int
-    osd_stat_min_battery: int
-    osd_stat_end_battery: int
-    osd_stat_battery: int
-    osd_stat_min_rssi: int
-    osd_stat_max_current: int
-    osd_stat_used_mah: int
-    osd_stat_max_altitude: int
-    osd_stat_blackbox: int
-    osd_stat_blackbox_number: int
-    osd_stat_max_g_force: int
-    osd_stat_max_esc_temp: int
-    osd_stat_max_esc_rpm: int
-    osd_stat_min_link_quality: int
-    osd_stat_flight_distance: int
-    osd_stat_max_fft: int
-    osd_stat_total_flights: int
-    osd_stat_total_time: int
-    osd_stat_total_dist: int
-    osd_stat_min_rssi_dbm: int
-    osd_timer_count: int
-    osd_timer_1: int
-    osd_timer_2: int
-    enabledwarnings: int
-    osd_warning_count: int            # 16
-    enabledwarnings_1_41_plus: int
-    osd_profile_count: int            # 1
-    osdprofileindex: int              # 1
-    overlay_radio_mode: int           # 0
+    osdflags: int = 0
+    video_system: int = 0
+    units: int = 0
+    rssi_alarm: int = 0
+    cap_alarm: int = 0
+    old_timer_alarm: int = 0
+    osd_item_count: int = 0               # 56
+    alt_alarm: int = 0
+    osd_rssi_value_pos: int = 0
+    osd_main_batt_voltage_pos: int = 0
+    osd_crosshairs_pos: int = 0
+    osd_artificial_horizon_pos: int = 0
+    osd_horizon_sidebars_pos: int = 0
+    osd_item_timer_1_pos: int = 0
+    osd_item_timer_2_pos: int = 0
+    osd_flymode_pos: int = 0
+    osd_craft_name_pos: int = 0
+    osd_throttle_pos_pos: int = 0
+    osd_vtx_channel_pos: int = 0
+    osd_current_draw_pos: int = 0
+    osd_mah_drawn_pos: int = 0
+    osd_gps_speed_pos: int = 0
+    osd_gps_sats_pos: int = 0
+    osd_altitude_pos: int = 0
+    osd_roll_pids_pos: int = 0
+    osd_pitch_pids_pos: int = 0
+    osd_yaw_pids_pos: int = 0
+    osd_power_pos: int = 0
+    osd_pidrate_profile_pos: int = 0
+    osd_warnings_pos: int = 0
+    osd_avg_cell_voltage_pos: int = 0
+    osd_gps_lon_pos: int = 0
+    osd_gps_lat_pos: int = 0
+    osd_debug_pos: int = 0
+    osd_pitch_angle_pos: int = 0
+    osd_roll_angle_pos: int = 0
+    osd_main_batt_usage_pos: int = 0
+    osd_disarmed_pos: int = 0
+    osd_home_dir_pos: int = 0
+    osd_home_dist_pos: int = 0
+    osd_numerical_heading_pos: int = 0
+    osd_numerical_vario_pos: int = 0
+    osd_compass_bar_pos: int = 0
+    osd_esc_tmp_pos: int = 0
+    osd_esc_rpm_pos: int = 0
+    osd_remaining_time_estimate_pos: int = 0
+    osd_rtc_datetime_pos: int = 0
+    osd_adjustment_range_pos: int = 0
+    osd_core_temperature_pos: int = 0
+    osd_anti_gravity_pos: int = 0
+    osd_g_force_pos: int = 0
+    osd_motor_diag_pos: int = 0
+    osd_log_status_pos: int = 0
+    osd_flip_arrow_pos: int = 0
+    osd_link_quality_pos: int = 0
+    osd_flight_dist_pos: int = 0
+    osd_stick_overlay_left_pos: int = 0
+    osd_stick_overlay_right_pos: int = 0
+    osd_display_name_pos: int = 0
+    osd_esc_rpm_freq_pos: int = 0
+    osd_rate_profile_name_pos: int = 0
+    osd_pid_profile_name_pos: int = 0
+    osd_profile_name_pos: int = 0
+    osd_rssi_dbm_value_pos: int = 0
+    osd_rc_channels_pos: int = 0
+    osd_stat_count: int = 0               # 24
+    osd_stat_rtc_date_time: int = 0
+    osd_stat_timer_1: int = 0
+    osd_stat_timer_2: int = 0
+    osd_stat_max_speed: int = 0
+    osd_stat_max_distance: int = 0
+    osd_stat_min_battery: int = 0
+    osd_stat_end_battery: int = 0
+    osd_stat_battery: int = 0
+    osd_stat_min_rssi: int = 0
+    osd_stat_max_current: int = 0
+    osd_stat_used_mah: int = 0
+    osd_stat_max_altitude: int = 0
+    osd_stat_blackbox: int = 0
+    osd_stat_blackbox_number: int = 0
+    osd_stat_max_g_force: int = 0
+    osd_stat_max_esc_temp: int = 0
+    osd_stat_max_esc_rpm: int = 0
+    osd_stat_min_link_quality: int = 0
+    osd_stat_flight_distance: int = 0
+    osd_stat_max_fft: int = 0
+    osd_stat_total_flights: int = 0
+    osd_stat_total_time: int = 0
+    osd_stat_total_dist: int = 0
+    osd_stat_min_rssi_dbm: int = 0
+    osd_timer_count: int = 0
+    osd_timer_1: int = 0
+    osd_timer_2: int = 0
+    enabledwarnings: int = 0
+    osd_warning_count: int = 0            # 16
+    enabledwarnings_1_41_plus: int = 0
+    osd_profile_count: int = 0            # 1
+    osdprofileindex: int = 0              # 1
+    overlay_radio_mode: int = 0           # 0
 
     def serialize(self):
         return struct.pack('<' + 'I' * 100,
