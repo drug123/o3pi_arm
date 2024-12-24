@@ -32,11 +32,11 @@ class MSPFCVariant:
     flight_control_identifier: str = field(metadata={"length": 4})
 
     def serialize(self):
-        # Encode the string to bytes and ensure it is exactly 4 bytes
         identifier_bytes = self.flight_control_identifier.encode('ascii')
-        if len(identifier_bytes) != 4:
-            raise ValueError("flight_control_identifier must be exactly 4 ASCII characters.")
-        return identifier_bytes
+        if len(identifier_bytes) > 4:
+            raise ValueError("flight_control_identifier cannot exceed 4 ASCII characters.")
+        identifier_bytes_padded = identifier_bytes.ljust(4, b'\x00')
+        return identifier_bytes_padded
 
 @dataclass
 class MSPFCVersion:
@@ -53,11 +53,11 @@ class MSPBoardInfo:
     board_identifier: str = field(metadata={"length": 4})
 
     def serialize(self):
-        # Encode the string and pack the integer
         identifier_bytes = self.board_identifier.encode('ascii')
-        if len(identifier_bytes) != 4:
-            raise ValueError("board_identifier must be exactly 4 ASCII characters.")
-        return identifier_bytes + struct.pack('<I', self.hardware_revision)
+        if len(identifier_bytes) > 4:
+            raise ValueError("board_identifier cannot exceed 4 ASCII characters.")
+        identifier_bytes_padded = identifier_bytes.ljust(4, b'\x00')
+        return identifier_bytes_padded + struct.pack('<I', self.hardware_revision)
 
 @dataclass
 class MSPBuildInfo:
@@ -66,9 +66,22 @@ class MSPBuildInfo:
     short_git_revision: str = field(metadata={"length": 7})
 
     def serialize(self):
-        return (self.build_date.encode('ascii') +
-                self.build_time.encode('ascii') +
-                self.short_git_revision.encode('ascii'))
+        build_date_bytes = self.build_date.encode('ascii')
+        if len(build_date_bytes) > 11:
+            raise ValueError("build_date cannot exceed 11 ASCII characters.")
+        build_date_padded = build_date_bytes.ljust(11, b'\x00')
+
+        build_time_bytes = self.build_time.encode('ascii')
+        if len(build_time_bytes) > 8:
+            raise ValueError("build_time cannot exceed 8 ASCII characters.")
+        build_time_padded = build_time_bytes.ljust(8, b'\x00')
+
+        short_git_revision_bytes = self.short_git_revision.encode('ascii')
+        if len(short_git_revision_bytes) > 7:
+            raise ValueError("short_git_revision cannot exceed 7 ASCII characters.")
+        short_git_revision_padded = short_git_revision_bytes.ljust(7, b'\x00')
+
+        return build_date_padded + build_time_padded + short_git_revision_padded
 
 @dataclass
 class MSPRawIMU:
@@ -372,6 +385,7 @@ class MspName:
 
     def serialize(self):
         name_bytes = self.name.encode('ascii')
-        if len(name_bytes) != 20:
-            raise ValueError("name must be exactly 20 ASCII characters.")
-        return name_bytes
+        if len(name_bytes) > 20:
+            raise ValueError("name cannot exceed 20 ASCII characters.")
+        name_bytes_padded = name_bytes.ljust(20, b'\x00')
+        return name_bytes_padded
